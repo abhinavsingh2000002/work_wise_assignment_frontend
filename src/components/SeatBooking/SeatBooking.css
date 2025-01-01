@@ -1,0 +1,94 @@
+.container {
+  text-align: center;
+  margin: 0 20px;
+}
+
+.booking-layout {
+  display: flex;
+  justify-content: space-between;
+}
+
+.seat-grid-container {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.booking-controls {
+  width: 250px;
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  justify-content: center;
+  margin-left: 20px;
+}
+
+.seat {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.seat.booked {
+  background-color: yellow;
+}
+
+.seat.available {
+  background-color: green;
+}
+
+.seat:hover {
+  background-color: lightgreen;
+}
+
+.button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 60px); /* Change from 10 to 7 */
+    justify-content: center;
+    margin-left: 71px;
+  }
+  
+  .seat {
+    width: 50px; /* Increase width */
+    height: 50px; /* Increase height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc; /* Optional: Add border for better visibility */
+    border-radius: 5px; /* Optional: Rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+  }
+  .booking-controls{
+    margin-left: 415px;
+    margin-top: 160px;
+  }
+    h2{
+    margin-bottom: 50px;
+  }
+
+  .profile-section {
+    margin-bottom: 10px;
+  }
+  

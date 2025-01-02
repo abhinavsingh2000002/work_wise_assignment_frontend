@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LoginForm.css';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 function LoginForm() {
     const navigate = useNavigate();
@@ -10,6 +12,15 @@ function LoginForm() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken'); 
+        const userId = localStorage.getItem('userId'); 
+        if (token && userId) {
+            navigate('/seats', { state: { userId, accessToken: token } });
+        }
+    }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -37,7 +48,9 @@ function LoginForm() {
 
             if (response.ok) {
                 alert(data.message);
-                navigate('/seats', { state: { userId: data.user.id , accessToken:data.user.accessToken } });    
+                localStorage.setItem('userId', data.user.id);
+                localStorage.setItem('accessToken', data.user.accessToken);
+                navigate('/seats', { state: { userId: data.user.id, accessToken: data.user.accessToken } });    
             } else {
                 setError(data.message || 'Invalid Email or Password!');
             }
@@ -46,6 +59,10 @@ function LoginForm() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -67,17 +84,27 @@ function LoginForm() {
                 </div>
                 <div className="form-group">
                     <label htmlFor="password">Password:</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        className="form-control"
-                        value={credentials.password}
-                        onChange={handleChange}
-                        placeholder="Enter your password"
-                        required
-                    />
+                    <div className="password-input" style={{ position: 'relative' }}>
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            className="form-control"
+                            value={credentials.password}
+                            onChange={handleChange}
+                            placeholder="Enter your password"
+                            required
+                        />
+                        <span 
+                            onClick={togglePasswordVisibility} 
+                            className="eye-icon" 
+                            style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }}
+                        >
+                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                        </span>
+                    </div>
                 </div>
+                {loading && <div className="loader"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>}
                 {error && <div className="error-message">{error}</div>}
                 <button type="submit" disabled={loading}>{loading ? 'Loading...' : 'Login'}</button>
             </form>

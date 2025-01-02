@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './SignupForm.css';
+import { useNavigate } from 'react-router-dom';
 
 function SignupForm() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -16,7 +18,7 @@ function SignupForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/api/users/register', {
+            const response = await fetch('https://work-wise-assignment-backend.onrender.com/api/users/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,6 +28,7 @@ function SignupForm() {
             const data = await response.json();
             console.log('Form Submitted:', data);
             alert(data.message);
+            navigate('/seats', { state: { userId: data.user.id , accessToken:data.user.accessToken } });    
         } catch (error) {
             console.error('Error during registration:', error);
             alert('Registration failed. Please try again.');

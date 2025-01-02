@@ -12,10 +12,9 @@ const SeatBooking = () => {
     const [seats, setSeats] = useState(Array(80).fill(false));
     const [bookedSeatsData, setBookedSeatsData] = useState([]);
     const [message, setMessage] = useState("");
-    const [numSeatsToBook, setNumSeatsToBook] = useState(0);
+    const [numSeatsToBook, setNumSeatsToBook] = useState();
     const [loading, setLoading] = useState(true);
     const [bookedSeatsCount, setBookedSeatsCount] = useState(0);
-    console.log(bookedSeatsCount)
 
     // Check if access token is present
     useEffect(() => {
@@ -29,9 +28,11 @@ const SeatBooking = () => {
     useEffect(() => {
         const fetchBookedSeats = async () => {
             setLoading(true);
-            const response = await fetch("http://localhost:5000/api/showBookedSeat");
+            const response = await fetch("https://work-wise-assignment-backend.onrender.com/api/showBookedSeat");
             if (response.ok) {
                 const data = await response.json();
+
+                setBookedSeatsCount(data.bookedSeatsCount);
                 const bookedSeatsArray = data.seatNumbers;
                 setBookedSeatsData(bookedSeatsArray);
                 const updatedSeats = seats.map((seat, index) => bookedSeatsArray.includes(index + 1));
@@ -44,13 +45,11 @@ const SeatBooking = () => {
         fetchBookedSeats();
     }, []);
 
-    const handleBookSeats = async () => {
+    const handleBookSeats = async (e) => {
+        e.preventDefault()
         setBookedSeatsData([]);
 
-        if (numSeatsToBook <= 0 || numSeatsToBook > seats.filter(seat => !seat).length) {
-        }
-
-        const response = await fetch("http://localhost:5000/api/seatBooking", {
+        const response = await fetch("https://work-wise-assignment-backend.onrender.com/api/seatBooking", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -63,6 +62,7 @@ const SeatBooking = () => {
             console.error("Error response:", response);
             setMessage(errorData.message || "Error booking seats.");
             alert(errorData.message || "Error booking seats.");
+            setNumSeatsToBook('')
             return;
         }
 
@@ -78,18 +78,18 @@ const SeatBooking = () => {
             setSeats(updatedSeats);
             setBookedSeatsData(data.allocatedSeats);
             setMessage(data.message);
-            
+
             setBookedSeatsCount(updatedSeats.filter(seat => seat).length);
-        } 
+        }
         else {
             setMessage("Unexpected response format.");
         }
 
-        setNumSeatsToBook(0);
+        setNumSeatsToBook('');
     };
 
     const handleReset = async () => {
-        const response = await fetch("http://localhost:5000/api/resetBooking", {
+        const response = await fetch("https://work-wise-assignment-backend.onrender.com/api/resetBooking", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const SeatBooking = () => {
             setSeats(Array(80).fill(false));
             setBookedSeatsData([]);
             setMessage("");
-            setNumSeatsToBook(0);
+            setNumSeatsToBook();
         } else {
             const errorData = await response.json();
             console.error("Error resetting booking:", errorData);
@@ -110,7 +110,7 @@ const SeatBooking = () => {
     };
 
     const handleLogout = async () => {
-        const response = await fetch("http://localhost:5000/api/users/logout", {
+        const response = await fetch("https://work-wise-assignment-backend.onrender.com/api/users/logout", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -175,7 +175,15 @@ const SeatBooking = () => {
                             <input
                                 type="number"
                                 className="form-control"
-                                onChange={(e) => setNumSeatsToBook(Number(e.target.value) || 0)}
+                                value={numSeatsToBook === 0 ? "" : numSeatsToBook}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === "") {
+                                        setNumSeatsToBook("");
+                                    } else {
+                                        setNumSeatsToBook(Number(value));
+                                    }
+                                }}
                                 placeholder="Number of seats"
                             />
                             <button className="button" onClick={handleBookSeats}>
